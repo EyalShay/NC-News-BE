@@ -170,7 +170,7 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 describe("GET api/users", () => {
-  test.only("status:200 , enpoint responds with JSON object containing an array of user objects", () => {
+  test("status:200 , enpoint responds with JSON object containing an array of user objects", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
