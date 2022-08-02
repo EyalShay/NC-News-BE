@@ -42,12 +42,12 @@ describe("ERROR Handling", () => {
         expect(body.msg).toBe("Endpoint was not found!");
       });
   });
-  test("status: 404 for an invalid article_id", () => {
+  test("status: 400 for an invalid article_id", () => {
     return request(app)
-      .get("/api/article/blorp")
-      .expect(404)
+      .get("/api/articles/blorp")
+      .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Endpoint was not found!");
+        expect(body.msg).toBe("Invalid request!");
       });
   });
   test("status: 404 for a valid, but non existing article_id", () => {
@@ -62,6 +62,18 @@ describe("ERROR Handling", () => {
     return request(app)
       .patch("/api/articles/2")
       .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test.only("status: 400 for invalid inc_votes property type", () => {
+    const articleUpdate = {
+      inc_votes: "Mr. Potatoe Head",
+    };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(articleUpdate)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid request!");
@@ -90,7 +102,7 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("request body accepts an object that determines how many votes to add to the votes propery", () => {
+  test("Status:200 request body accepts an object that determines how many votes to add to the votes propery", () => {
     const update = { inc_votes: 4 };
     return request(app)
       .patch("/api/articles/3")
@@ -126,7 +138,7 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-  test("ignore extra or invalid keys", () => {
+  test.only("ignore extra or invalid keys", () => {
     const articleUpdate = {
       inc_votes: 99,
       rating: 6.7,
