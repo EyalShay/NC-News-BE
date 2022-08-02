@@ -4,11 +4,16 @@ const seed = require("./db/seeds/seed");
 const {
   getTopics,
   getArticlesById,
+  patchArticlesById,
 } = require("./controllers/topics-controllers");
+
+app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticlesById);
+
+app.patch("/api/articles/:article_id", patchArticlesById);
 
 app.all("/*", (req, res) => {
   console.log("<<< error in app.all");
@@ -17,7 +22,7 @@ app.all("/*", (req, res) => {
 
 app.use((err, req, res, next) => {
   console.log(err, "<<< error in app.use");
-  if (err.code === "to be added") {
+  if (err.code === "22P02") {
     res.status(400).send({ msg: "Invalid request!" });
   } else {
     res.status(err.status).send({ msg: err.msg });
