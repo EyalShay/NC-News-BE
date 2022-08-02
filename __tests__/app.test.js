@@ -12,7 +12,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("GET api/topics", () => {
+describe("GET api/users", () => {
   test("status:200 , enpoint responds with JSON object containing an array of topic objects", () => {
     return request(app)
       .get("/api/topics")
@@ -165,6 +165,28 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid request!");
+      });
+  });
+});
+
+describe("GET api/users", () => {
+  test.only("status:200 , enpoint responds with JSON object containing an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toBeInstanceOf(Array);
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
