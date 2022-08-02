@@ -33,50 +33,13 @@ describe("GET api/topics", () => {
   });
 });
 
-describe("ERROR Handling", () => {
+describe("ERROR handling, general errors", () => {
   test("status: 404 when unable to find endpoint", () => {
     return request(app)
       .get("/missingEndpoint")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Endpoint was not found!");
-      });
-  });
-  test("status: 400 for an invalid article_id", () => {
-    return request(app)
-      .get("/api/articles/blorp")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid request!");
-      });
-  });
-  test("status: 404 for a valid, but non existing article_id", () => {
-    return request(app)
-      .get("/api/articles/9000")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Article not found!");
-      });
-  });
-  test("status:400 for a request where the object is empty", () => {
-    return request(app)
-      .patch("/api/articles/2")
-      .send({})
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid request!");
-      });
-  });
-  test("status: 400 for invalid inc_votes property type", () => {
-    const articleUpdate = {
-      inc_votes: "Mr. Potatoe Head",
-    };
-    return request(app)
-      .patch("/api/articles/3")
-      .send(articleUpdate)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid request!");
       });
   });
 });
@@ -97,6 +60,22 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: 0,
         });
+      });
+  });
+  test("status: 400 for an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/blorp")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status: 404 for a valid, but non existing article_id", () => {
+    return request(app)
+      .get("/api/articles/9000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found!");
       });
   });
 });
@@ -165,6 +144,49 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status:400 for a request where the object is empty", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status: 400 for invalid inc_votes property type", () => {
+    const articleUpdate = {
+      inc_votes: "Mr. Potatoe Head",
+    };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(articleUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+});
+
+describe("GET api/users", () => {
+  test("status:200 , enpoint responds with JSON object containing an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toBeInstanceOf(Array);
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });

@@ -6,6 +6,7 @@ const {
   getArticlesById,
   patchArticlesById,
 } = require("./controllers/topics-controllers");
+const { getUsers } = require("./controllers/users-controllers");
 
 app.use(express.json());
 
@@ -14,6 +15,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
 
 app.patch("/api/articles/:article_id", patchArticlesById);
+
+app.get("/api/users", getUsers);
 
 app.all("/*", (req, res) => {
   console.log("<<< error in app.all");
