@@ -67,7 +67,7 @@ describe("ERROR Handling", () => {
         expect(body.msg).toBe("Invalid request!");
       });
   });
-  test.only("status: 400 for invalid inc_votes property type", () => {
+  test("status: 400 for invalid inc_votes property type", () => {
     const articleUpdate = {
       inc_votes: "Mr. Potatoe Head",
     };
@@ -138,7 +138,7 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-  test.only("ignore extra or invalid keys", () => {
+  test("ignore extra or invalid keys", () => {
     const articleUpdate = {
       inc_votes: 99,
       rating: 6.7,
@@ -157,6 +157,14 @@ describe("PATCH /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: 99,
         });
+      });
+  });
+  test("status: 400 for a valid, but non existing article_id", () => {
+    return request(app)
+      .patch("/api/articles/9999")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
       });
   });
 });
