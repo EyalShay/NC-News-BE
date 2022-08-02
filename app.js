@@ -1,11 +1,11 @@
 const express = require("express");
 const app = express();
 const seed = require("./db/seeds/seed");
+const { getTopics } = require("./controllers/topics-controllers");
 const {
-  getTopics,
   getArticlesById,
   patchArticlesById,
-} = require("./controllers/topics-controllers");
+} = require("./controllers/articles-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 
 app.use(express.json());
