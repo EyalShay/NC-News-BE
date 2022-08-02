@@ -17,20 +17,17 @@ exports.selectArticlesById = (id) => {
           msg: "Article not found!",
         });
       }
-      console.log("models 20");
       return article;
     });
 };
 
 exports.updateArticlesById = (newVotes, id) => {
   if (newVotes === undefined) {
-    console.log("models 26");
     return Promise.reject({
       status: 400,
       msg: "Invalid request!",
     });
   } else {
-    console.log("models 33");
     return db
       .query(
         `UPDATE articles SET votes = (votes + $1) WHERE article_id=$2 RETURNING *;`,

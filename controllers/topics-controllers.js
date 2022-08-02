@@ -12,27 +12,23 @@ exports.getTopics = (req, res, next) => {
 
 exports.getArticlesById = (req, res, next) => {
   const id = req.params.article_id;
-  console.log("controller 13");
   selectArticlesById(id)
     .then((article) => {
       res.status(200).send({ article });
     })
     .catch((err) => {
-      //   console.log(err, "<<<getArticlesbyId");
       next(err);
     });
 };
 
 exports.patchArticlesById = (req, res, next) => {
   const id = req.params.article_id;
-  console.log("controller 28");
   const newVotes = req.body.inc_votes;
   updateArticlesById(newVotes, id)
     .then((article) => {
       res.send({ article });
     })
     .catch((err) => {
-      //   console.log(err, "<<<patchArticlesbyId");
       next(err);
     });
 };
