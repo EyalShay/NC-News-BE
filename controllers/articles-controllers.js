@@ -2,6 +2,7 @@ const {
   selectArticlesById,
   updateArticlesById,
   fetchArticles,
+  fetchCommentsByArticleId,
 } = require("../models/articles-models");
 
 exports.getArticlesById = (req, res, next) => {
@@ -30,4 +31,15 @@ exports.patchArticlesById = (req, res, next) => {
 exports.getArticles = async (req, res, next) => {
   const articles = await fetchArticles();
   res.status(200).send({ articles });
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  const id = req.params.article_id;
+  fetchCommentsByArticleId(id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
