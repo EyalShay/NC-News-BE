@@ -51,15 +51,17 @@ describe("GET /api/articles/:article_id", () => {
       .get(`/api/articles/${ID}`)
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual({
-          article_id: ID,
-          title: "Sony Vaio; or, The Laptop",
-          topic: "mitch",
-          author: "icellusedkars",
-          body: expect.any(String),
-          created_at: expect.any(String),
-          votes: 0,
-        });
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            article_id: ID,
+            title: "Sony Vaio; or, The Laptop",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 0,
+          })
+        );
       });
   });
   test("status: 400 for an invalid article_id", () => {
@@ -186,6 +188,27 @@ describe("GET api/users", () => {
               avatar_url: expect.any(String),
             })
           );
+        });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("responds with a single matching article with a total count of all the comments with this articles_id", () => {
+    const ID = 3;
+    return request(app)
+      .get(`/api/articles/${ID}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: ID,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: expect.any(String),
+          votes: 0,
+          comment_count: 2,
         });
       });
   });
