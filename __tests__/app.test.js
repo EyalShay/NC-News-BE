@@ -172,7 +172,7 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 describe("GET api/users", () => {
-  test("status:200 , enpoint responds with JSON object containing an array of user objects", () => {
+  test("status:200 enpoint responds with JSON object containing an array of user objects", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -209,6 +209,42 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: 0,
           comment_count: 2,
+        });
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("status:200 responds with an array of all the articles including a comment_count property", () => {
+    const ID = 3;
+    return request(app)
+      .get(`/api/articles`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              title: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("status:200 sorts the articles by date, descending", () => {
+    return request(app)
+      .get(`/api/articles`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
         });
       });
   });
