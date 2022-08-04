@@ -250,21 +250,21 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe("POST /api/articles/:article_id/comments", () => {
-  test("status:201, responds with newly posted comments", () => {
-    const newComment = {
-      author: "blorp_blorpstein",
-      body: "loads of interesting things",
-    };
-    return request(app)
-      .post("/api/articles/2/comments")
-      .send(newComment)
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.comment).toEqual({
-          comment_id,
-          ...newcomment,
-        });
-      });
-  });
-});
+// describe("POST /api/articles/:article_id/comments", () => {
+//   test("status:201, responds with newly posted comments", () => {
+//     const newComment = {
+//       author: "blorp_blorpstein",
+//       body: "loads of interesting things",
+//     };
+//     return request(app)
+//       .post("/api/articles/2/comments")
+//       .send(newComment)
+//       .expect(201)
+//       .then(({ body }) => {
+//         expect(body.comment).toEqual({
+//           comment_id,
+//           ...newcomment,
+//         });
+//       });
+//   });
+// });
