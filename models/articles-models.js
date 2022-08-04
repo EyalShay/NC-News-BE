@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkArticleExists } = require("../db/seeds/utils");
 
 exports.selectArticlesById = (id) => {
   return db
@@ -47,15 +48,34 @@ exports.fetchArticles = () => {
     });
 };
 
+// exports.fetchCommentsByArticleId = (id) => {
+//   return db
+//     .query(`SELECT * FROM %I WHERE  %I = $1`, [id])
+//     .then(({ rows }) => {
+//       console.log(rows, "<<<<< rows");
+//       if (rows.length === 0) {
+//         return Promise.reject({
+//           status: 404,
+//           msg: "Article not found!",
+//         });
+//       }
+//       return rows;
+//     });
+// };
+
 exports.fetchCommentsByArticleId = (id) => {
   return db
     .query(`SELECT * FROM comments WHERE  article_id=$1`, [id])
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "Article not found!",
+        checkArticleExists(id).then((rows) => {
+          console.log(rows, "rows 72");
+          return rows;
         });
+        // return Promise.reject({
+        //   status: 404,
+        //   msg: "Article not found!",
+        // });
       }
       return rows;
     });

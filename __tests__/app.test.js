@@ -310,4 +310,13 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Invalid request!");
       });
   });
+  test.only("status:200 returns an empty array for an article that exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.comments, "<<<test");
+        expect(body.comments).toEqual([]);
+      });
+  });
 });
