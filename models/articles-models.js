@@ -46,3 +46,18 @@ exports.fetchArticles = () => {
       return rows;
     });
 };
+
+exports.insertComments = (newComment, id) => {
+  console.log(newComment.body, "<<<body");
+  console.log(newComment.author, "<<<username");
+  const article_id = id;
+  console.log(id);
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+      [newComment.author, newComment.body, article_id]
+    )
+    .then(({ rows }) => {
+      console.log(rows, "<<<<<endrows");
+    });
+};

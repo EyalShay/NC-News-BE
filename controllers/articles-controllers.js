@@ -2,6 +2,7 @@ const {
   selectArticlesById,
   updateArticlesById,
   fetchArticles,
+  insertComments,
 } = require("../models/articles-models");
 
 exports.getArticlesById = (req, res, next) => {
@@ -30,4 +31,11 @@ exports.patchArticlesById = (req, res, next) => {
 exports.getArticles = async (req, res, next) => {
   const articles = await fetchArticles();
   res.status(200).send({ articles });
+};
+
+exports.postComments = async (req, res, next) => {
+  const newComment = req.body;
+  const id = req.params.article_id;
+  const comments = await insertComments(newComment, id);
+  console.log(comments, "<<<controller");
 };
