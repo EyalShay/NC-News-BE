@@ -1,10 +1,11 @@
+const { checkUser, checkArticleExists } = require("../db/seeds/utils");
 const {
   selectArticlesById,
   updateArticlesById,
   fetchArticles,
+  insertComments,
   fetchCommentsByArticleId,
 } = require("../models/articles-models");
-const { checkArticleExists } = require("../db/seeds/utils");
 
 exports.getArticlesById = (req, res, next) => {
   const id = req.params.article_id;
@@ -32,6 +33,26 @@ exports.patchArticlesById = (req, res, next) => {
 exports.getArticles = async (req, res, next) => {
   const articles = await fetchArticles();
   res.status(200).send({ articles });
+};
+
+exports.postComments = async (req, res, next) => {
+  try {
+    const newComment = req.body;
+    const id = req.params.article_id;
+    const authorName = req.body.author;
+    if (Object.keys(newComment).length === 0) {
+      throw {
+        status: 400,
+        msg: "Comment body is empty!",
+      };
+    }
+    await checkArticleExists(id);
+    const exists = await checkUser(authorName);
+    const comments = await insertComments(newComment, id, exists);
+    res.status(201).send({ comment: comments });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {

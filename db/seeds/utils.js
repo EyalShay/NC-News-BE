@@ -23,6 +23,14 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
+exports.checkUser = (author) => {
+  return db
+    .query(`SELECT * FROM users WHERE username=$1`, [author])
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
 exports.checkArticleExists = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id=$1`, [id])

@@ -6,6 +6,7 @@ const {
   getArticlesById,
   patchArticlesById,
   getArticles,
+  postComments,
   getCommentsByArticleId,
 } = require("./controllers/articles-controllers");
 const { getUsers } = require("./controllers/users-controllers");
@@ -23,6 +24,8 @@ app.get("/api/articles/:article_id", getArticlesById);
 app.patch("/api/articles/:article_id", patchArticlesById);
 
 app.get("/api/users", getUsers);
+
+app.post("/api/articles/:article_id/comments", postComments);
 
 app.all("/*", (req, res) => {
   // console.log("<<< error in app.all");
