@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const { checkUser } = require("../db/seeds/utils");
+const { checkArticleExists } = require("../db/seeds/utils");
 
 exports.selectArticlesById = (id) => {
   return db
@@ -63,5 +64,13 @@ exports.insertComments = (newComment, id, exists) => {
     )
     .then(({ rows }) => {
       return rows[0];
+    });
+};
+
+exports.fetchCommentsByArticleId = (id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE article_id=$1`, [id])
+    .then(({ rows }) => {
+      return rows;
     });
 };

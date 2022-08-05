@@ -4,6 +4,7 @@ const {
   updateArticlesById,
   fetchArticles,
   insertComments,
+  fetchCommentsByArticleId,
 } = require("../models/articles-models");
 
 exports.getArticlesById = (req, res, next) => {
@@ -52,4 +53,17 @@ exports.postComments = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  const id = req.params.article_id;
+  checkArticleExists(id)
+    .then(() => {
+      fetchCommentsByArticleId(id).then((comments) => {
+        res.status(200).send({ comments });
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
