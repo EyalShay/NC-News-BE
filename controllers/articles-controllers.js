@@ -1,3 +1,4 @@
+const { checkUser } = require("../db/seeds/utils");
 const {
   selectArticlesById,
   updateArticlesById,
@@ -34,8 +35,20 @@ exports.getArticles = async (req, res, next) => {
 };
 
 exports.postComments = async (req, res, next) => {
-  const newComment = req.body;
-  const id = req.params.article_id;
-  const comments = await insertComments(newComment, id);
-  console.log(comments, "<<<controller");
+  try {
+    const newComment = req.body;
+    const id = req.params.article_id;
+    const authorName = req.body.author;
+    if (Object.keys(newComment).length === 0) {
+      throw {
+        status: 400,
+        msg: "Comment body is empty!",
+      };
+    }
+    const exists = await checkUser(authorName);
+    const comments = await insertComments(newComment, id, exists);
+    res.status(201).send({ comment: comments });
+  } catch (err) {
+    next(err);
+  }
 };

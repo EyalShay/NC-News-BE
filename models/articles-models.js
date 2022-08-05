@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkUser } = require("../db/seeds/utils");
 
 exports.selectArticlesById = (id) => {
   return db
@@ -47,17 +48,22 @@ exports.fetchArticles = () => {
     });
 };
 
-exports.insertComments = (newComment, id) => {
-  console.log(newComment.body, "<<<body");
-  console.log(newComment.author, "<<<username");
+exports.insertComments = (newComment, id, exists) => {
   const article_id = id;
-  console.log(id);
+  console.log(exists, "<<<modelexists");
+  if (exists.length === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "Author not found!",
+    });
+  }
+  console.log(newComment, "model");
   return db
     .query(
       `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`,
       [newComment.author, newComment.body, article_id]
     )
     .then(({ rows }) => {
-      console.log(rows, "<<<<<endrows");
+      return rows[0];
     });
 };

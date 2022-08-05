@@ -25,12 +25,12 @@ app.get("/api/users", getUsers);
 app.post("/api/articles/:article_id/comments", postComments);
 
 app.all("/*", (req, res) => {
-  // console.log("<<< error in app.all");
+  console.log("<<< error in app.all");
   res.status(404).send({ msg: "Endpoint was not found!" });
 });
 
 app.use((err, req, res, next) => {
-  // console.log(err, "<<< error in app.use");
+  console.log(err, "<<< error in app.use");
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Invalid request!" });
   } else {

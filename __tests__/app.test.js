@@ -250,21 +250,78 @@ describe("GET /api/articles", () => {
   });
 });
 
-// describe("POST /api/articles/:article_id/comments", () => {
-//   test("status:201, responds with newly posted comments", () => {
-//     const newComment = {
-//       author: "blorp_blorpstein",
-//       body: "loads of interesting things",
-//     };
-//     return request(app)
-//       .post("/api/articles/2/comments")
-//       .send(newComment)
-//       .expect(201)
-//       .then(({ body }) => {
-//         expect(body.comment).toEqual({
-//           comment_id,
-//           ...newcomment,
-//         });
-//       });
-//   });
-// });
+describe("POST /api/articles/:article_id/comments", () => {
+  test("status:201, responds with newly posted comments", () => {
+    const newComment = {
+      author: "icellusedkars",
+      body: "loads of interesting things",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(
+          expect.objectContaining({
+            author: "icellusedkars",
+            body: "loads of interesting things",
+            comment_id: 19,
+            article_id: 2,
+            votes: 0,
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  test("status: 404 for an author that doesn't exist", () => {
+    const newComment = {
+      author: "blorp_blorpstein",
+      body: "This article was blorptacular!",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        console.log(body.msg, "<<<msg");
+        expect(body.msg).toBe("Author not found!");
+      });
+  });
+  // test.only("status: 404 for avalid but non existing article", () => {
+  //   const newComment = {
+  //     author: "icellusedkars",
+  //     body: "loads of interesting things",
+  //   };
+  //   return request(app)
+  //     .post("/api/articles/9999/comments")
+  //     .send(newComment)
+  //     .expect(404)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toBe("Invalid request!");
+  //     });
+  // });
+  test("status: 400 for an invalid article_id", () => {
+    const newComment = {
+      author: "icellusedkars",
+      body: "loads of interesting things",
+    };
+    return request(app)
+      .post("/api/articles/blorp/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status: 400 for an empty comment post request", () => {
+    const newComment = {};
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment body is empty!");
+      });
+  });
+});
