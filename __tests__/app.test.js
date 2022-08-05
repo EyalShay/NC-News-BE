@@ -249,3 +249,73 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("responds with a single matching article with a total count of all the comments with this articles_id", () => {
+    const ID = 3;
+    return request(app)
+      .get(`/api/articles/${ID}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: ID,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: expect.any(String),
+          votes: 0,
+          comment_count: 2,
+        });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("status:200 responds with an array of comments for the given article_id", () => {
+    const ID = 3;
+    return request(app)
+      .get(`/api/articles/${ID}/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(2);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("status:404 for a valid, but non existing article_id number", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found!");
+      });
+  });
+  test("status: 400 for an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/blorp/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status:200 returns an empty array for an article that exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+});
