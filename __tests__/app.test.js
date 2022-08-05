@@ -284,23 +284,22 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        console.log(body.msg, "<<<msg");
         expect(body.msg).toBe("Author not found!");
       });
   });
-  // test.only("status: 404 for avalid but non existing article", () => {
-  //   const newComment = {
-  //     author: "icellusedkars",
-  //     body: "loads of interesting things",
-  //   };
-  //   return request(app)
-  //     .post("/api/articles/9999/comments")
-  //     .send(newComment)
-  //     .expect(404)
-  //     .then(({ body }) => {
-  //       expect(body.msg).toBe("Invalid request!");
-  //     });
-  // });
+  test("status: 404 for a valid but non existing article", () => {
+    const newComment = {
+      author: "icellusedkars",
+      body: "loads of interesting things",
+    };
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found!");
+      });
+  });
   test("status: 400 for an invalid article_id", () => {
     const newComment = {
       author: "icellusedkars",

@@ -50,14 +50,12 @@ exports.fetchArticles = () => {
 
 exports.insertComments = (newComment, id, exists) => {
   const article_id = id;
-  console.log(exists, "<<<modelexists");
   if (exists.length === 0) {
     return Promise.reject({
       status: 404,
       msg: "Author not found!",
     });
   }
-  console.log(newComment, "model");
   return db
     .query(
       `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`,

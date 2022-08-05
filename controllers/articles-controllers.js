@@ -1,4 +1,4 @@
-const { checkUser } = require("../db/seeds/utils");
+const { checkUser, checkArticleExists } = require("../db/seeds/utils");
 const {
   selectArticlesById,
   updateArticlesById,
@@ -45,6 +45,7 @@ exports.postComments = async (req, res, next) => {
         msg: "Comment body is empty!",
       };
     }
+    await checkArticleExists(id);
     const exists = await checkUser(authorName);
     const comments = await insertComments(newComment, id, exists);
     res.status(201).send({ comment: comments });
