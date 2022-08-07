@@ -514,4 +514,12 @@ describe("GET /api/articles (queries)", () => {
         expect(body.msg).toBe("Invalid request!");
       });
   });
+  test("status:400 should not accept an asc or desc request to a topic", () => {
+    return request(app)
+      .get(`/api/articles?topic=desc`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
 });

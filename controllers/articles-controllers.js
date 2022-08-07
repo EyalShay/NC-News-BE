@@ -33,6 +33,14 @@ exports.patchArticlesById = (req, res, next) => {
 exports.getArticles = async (req, res, next) => {
   try {
     let { sort_by } = req.query;
+    if (Object.keys(req.query)[0] === "topic") {
+      if (req.query.topic === "asc" || req.query.topic === "desc") {
+        throw {
+          status: 400,
+          msg: "Invalid request!",
+        };
+      }
+    }
     req.query.topic !== undefined ? (sort_by = req.query.topic) : null;
     req.query.order !== undefined ? (sort_by = req.query.order) : null;
     if (sort_by === undefined && Object.keys(req.query).length > 0) {

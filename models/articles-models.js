@@ -52,11 +52,9 @@ exports.fetchArticles = async (sortBy = "created_at") => {
     "title",
     "article_id",
   ];
-
   if (!validSortBy.includes(sortBy)) {
     return Promise.reject({ status: 400, msg: "Invalid request!" });
   }
-
   let queryStr = `SELECT articles.*, COUNT (comments.article_id)::INTEGER AS comment_count 
       FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id`;
   if (validTopic !== undefined) {
@@ -64,7 +62,6 @@ exports.fetchArticles = async (sortBy = "created_at") => {
     injected.push(validTopic);
     sortBy = "topic";
   }
-
   if (sortBy === "asc" || sortBy === "desc") {
     sortBy = `title ${sortBy}`;
   }
@@ -72,7 +69,6 @@ exports.fetchArticles = async (sortBy = "created_at") => {
   if (sortBy === "created_at") {
     queryStr += "desc";
   }
-
   const { rows } = await db.query(queryStr, injected);
   if (rows.length === 0) {
     return Promise.reject({

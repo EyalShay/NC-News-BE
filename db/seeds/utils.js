@@ -44,7 +44,6 @@ exports.checkArticleExists = (id) => {
 
 exports.checkTopic = (topic_name) => {
   return db
-
     .query(`SELECT * FROM topics WHERE slug=$1`, [topic_name])
     .then(({ rows }) => {
       if (rows.length > 0) {
