@@ -31,8 +31,21 @@ exports.patchArticlesById = (req, res, next) => {
 };
 
 exports.getArticles = async (req, res, next) => {
-  const articles = await fetchArticles();
-  res.status(200).send({ articles });
+  try {
+    let { sort_by } = req.query;
+    req.query.topic !== undefined ? (sort_by = req.query.topic) : null;
+    req.query.order !== undefined ? (sort_by = req.query.order) : null;
+    if (sort_by === undefined && Object.keys(req.query).length > 0) {
+      throw {
+        status: 400,
+        msg: "Invalid request!",
+      };
+    }
+    const articles = await fetchArticles(sort_by);
+    res.status(200).send({ articles });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.postComments = async (req, res, next) => {
@@ -43,7 +56,7 @@ exports.postComments = async (req, res, next) => {
     if (Object.keys(newComment).length === 0) {
       throw {
         status: 400,
-        msg: "Comment body is empty!",
+        msg: "Require properties missing",
       };
     }
     await checkArticleExists(id);

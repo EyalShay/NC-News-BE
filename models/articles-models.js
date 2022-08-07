@@ -1,6 +1,5 @@
 const db = require("../db/connection");
-const { checkUser } = require("../db/seeds/utils");
-const { checkArticleExists } = require("../db/seeds/utils");
+const { checkTopic } = require("../db/seeds/utils");
 
 exports.selectArticlesById = (id) => {
   return db
@@ -37,16 +36,51 @@ exports.updateArticlesById = (newVotes, id) => {
   }
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `SELECT articles.*, COUNT (comments.article_id)::INTEGER AS comment_count 
-      FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id 
-      GROUP BY articles.article_id ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
+exports.fetchArticles = async (sortBy = "created_at") => {
+  const exists = await checkTopic(sortBy);
+  const validTopic = exists[0].slug;
+  const injected = [];
+  const validSortBy = [
+    validTopic,
+    "desc",
+    "asc",
+    "topic",
+    "created_at",
+    "author",
+    "body",
+    "votes",
+    "title",
+    "article_id",
+  ];
+
+  if (!validSortBy.includes(sortBy)) {
+    return Promise.reject({ status: 400, msg: "Invalid request!" });
+  }
+
+  let queryStr = `SELECT articles.*, COUNT (comments.article_id)::INTEGER AS comment_count 
+      FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id`;
+  if (validTopic !== undefined) {
+    queryStr += ` WHERE articles.topic=$1`;
+    injected.push(validTopic);
+    sortBy = "topic";
+  }
+
+  if (sortBy === "asc" || sortBy === "desc") {
+    sortBy = `title ${sortBy}`;
+  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} `;
+  if (sortBy === "created_at") {
+    queryStr += "desc";
+  }
+
+  const { rows } = await db.query(queryStr, injected);
+  if (rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "No articles found with requested topic!",
     });
+  }
+  return rows;
 };
 
 exports.insertComments = (newComment, id, exists) => {
