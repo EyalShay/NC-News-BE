@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const seed = require("./db/seeds/seed");
 const { getTopics } = require("./controllers/topics-controllers");
 const {
   getArticlesById,

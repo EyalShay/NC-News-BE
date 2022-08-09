@@ -41,3 +41,14 @@ exports.checkArticleExists = (id) => {
       return rows;
     });
 };
+
+exports.checkTopic = (topic_name) => {
+  return db
+    .query(`SELECT * FROM topics WHERE slug=$1`, [topic_name])
+    .then(({ rows }) => {
+      if (rows.length > 0) {
+        return rows;
+      }
+      return topic_name;
+    });
+};

@@ -390,7 +390,136 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Comment body is empty!");
+        expect(body.msg).toBe("Require properties missing");
+      });
+  });
+});
+
+describe("GET /api/articles (queries)", () => {
+  test("status:200 accepts sort_by query that sorts articles by valid column =author", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("author");
+      });
+  });
+  test("status:200 accepts sort_by query that sorts articles by valid column =body", () => {
+    return request(app)
+      .get("/api/articles?sort_by=body")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("body");
+      });
+  });
+  test("status:200 accepts sort_by query that sorts articles by valid column =votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("votes");
+      });
+  });
+  test("status:200 accepts sort_by query that sorts articles by valid column =title", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title");
+      });
+  });
+  test("status:200 accepts sort_by query that sorts articles by valid column =topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("topic");
+      });
+  });
+  test("status:200 accepts order query that can be set with either asc or desc - desending order", () => {
+    return request(app)
+      .get(`/api/articles?order=desc`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("status:200 accepts order query that can be set with either asc or desc - ascending order", () => {
+    return request(app)
+      .get(`/api/articles?order=asc`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { ascending: true });
+      });
+  });
+  test("status:200 accepts topic query that will filter the articles by topic value", () => {
+    return request(app)
+      .get(`/api/articles?topic=mitch`)
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(11);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              topic: "mitch",
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("status:404 when topic is valid but has no articles", () => {
+    return request(app)
+      .get(`/api/articles?topic=paper`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No articles found with requested topic!");
+      });
+  });
+  test("status:400 for an invalid topic", () => {
+    return request(app)
+      .get(`/api/articles?topic=blorp`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status:400 for an invalid sort_by request", () => {
+    return request(app)
+      .get(`/api/articles?sort_by=onions`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status:400 for an invalid order request", () => {
+    return request(app)
+      .get(`/api/articles?order=sideways`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status:400 for an invalid query", () => {
+    return request(app)
+      .get(`/api/articles?summer=mitch`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+  test("status:400 should not accept an asc or desc request to a topic", () => {
+    return request(app)
+      .get(`/api/articles?topic=desc`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
       });
   });
 });
