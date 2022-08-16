@@ -3,6 +3,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(testData);
@@ -401,7 +402,7 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=author")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("author");
+        expect(body.articles).toBeSortedBy("author", { descending: true });
       });
   });
   test("status:200 accepts sort_by query that sorts articles by valid column =body", () => {
@@ -409,7 +410,7 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=body")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("body");
+        expect(body.articles).toBeSortedBy("body", { descending: true });
       });
   });
   test("status:200 accepts sort_by query that sorts articles by valid column =votes", () => {
@@ -417,7 +418,7 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=votes")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("votes");
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
       });
   });
   test("status:200 accepts sort_by query that sorts articles by valid column =title", () => {
@@ -425,7 +426,7 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=title")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("title");
+        expect(body.articles).toBeSortedBy("title", { descending: true });
       });
   });
   test("status:200 accepts sort_by query that sorts articles by valid column =topic", () => {
@@ -433,12 +434,12 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=topic")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("topic");
+        expect(body.articles).toBeSortedBy("topic", { descending: true });
       });
   });
   test("status:200 accepts order query that can be set with either asc or desc - desending order", () => {
     return request(app)
-      .get(`/api/articles?order=desc`)
+      .get(`/api/articles?sort_by=title&order=desc`)
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("title", { descending: true });
@@ -446,7 +447,7 @@ describe("GET /api/articles (queries)", () => {
   });
   test("status:200 accepts order query that can be set with either asc or desc - ascending order", () => {
     return request(app)
-      .get(`/api/articles?order=asc`)
+      .get(`/api/articles?sort_by=title&order=asc`)
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("title", { ascending: true });
@@ -500,26 +501,51 @@ describe("GET /api/articles (queries)", () => {
   });
   test("status:400 for an invalid order request", () => {
     return request(app)
-      .get(`/api/articles?order=sideways`)
+      .get(`/api/articles?topic=title&order=sideways`)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid request!");
       });
   });
-  test("status:400 for an invalid query", () => {
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("status:204 No Content Status, endpoint should delete the specified comment from the database", () => {
+    const ID = 1;
     return request(app)
-      .get(`/api/articles?summer=mitch`)
+      .delete(`/api/comments/${ID}`)
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("status:404 when trying to delete a comment that doesn't exist from a valid endpoint", () => {
+    const ID = 999;
+    return request(app)
+      .delete(`/api/comments/${ID}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment was not found!");
+      });
+  });
+  test("status:400 when trying to delete a comment with an invalid endpoint", () => {
+    return request(app)
+      .delete(`/api/comments/blorp`)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid request!");
       });
   });
-  test("status:400 should not accept an asc or desc request to a topic", () => {
+});
+
+describe("GET /api", () => {
+  test("responds with a json representation of all the available enopoints on the api", () => {
+    const endpointsCopy = { ...endpoints };
     return request(app)
-      .get(`/api/articles?topic=desc`)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid request!");
+      .get("/api")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.endpoints).toEqual(endpointsCopy);
       });
   });
 });
