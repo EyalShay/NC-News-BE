@@ -5,51 +5,38 @@ const {
   fetchArticles,
   insertComments,
   fetchCommentsByArticleId,
+  removeCommentById,
 } = require("../models/articles-models");
+const endpoints = require("../endpoints.json");
 
-exports.getArticlesById = (req, res, next) => {
-  const id = req.params.article_id;
-  selectArticlesById(id)
-    .then((article) => {
-      res.status(200).send({ article });
-    })
-    .catch((err) => {
-      next(err);
-    });
+exports.getArticlesById = async (req, res, next) => {
+  try {
+    const id = req.params.article_id;
+    const articles = await selectArticlesById(id);
+    res.status(200).send({ article: articles });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.patchArticlesById = (req, res, next) => {
-  const id = req.params.article_id;
-  const newVotes = req.body.inc_votes;
-  updateArticlesById(newVotes, id)
-    .then((article) => {
-      res.send({ article });
-    })
-    .catch((err) => {
-      next(err);
-    });
+exports.patchArticlesById = async (req, res, next) => {
+  try {
+    const id = req.params.article_id;
+    const newVotes = req.body.inc_votes;
+    const article = await updateArticlesById(newVotes, id);
+    res.send({ article });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getArticles = async (req, res, next) => {
   try {
-    let { sort_by } = req.query;
-    if (Object.keys(req.query)[0] === "topic") {
-      if (req.query.topic === "asc" || req.query.topic === "desc") {
-        throw {
-          status: 400,
-          msg: "Invalid request!",
-        };
-      }
+    let { sort_by, topic, order } = req.query;
+    if (topic !== undefined) {
+      sort_by = topic;
     }
-    req.query.topic !== undefined ? (sort_by = req.query.topic) : null;
-    req.query.order !== undefined ? (sort_by = req.query.order) : null;
-    if (sort_by === undefined && Object.keys(req.query).length > 0) {
-      throw {
-        status: 400,
-        msg: "Invalid request!",
-      };
-    }
-    const articles = await fetchArticles(sort_by);
+    const articles = await fetchArticles(sort_by, order);
     res.status(200).send({ articles });
   } catch (err) {
     next(err);
@@ -76,15 +63,27 @@ exports.postComments = async (req, res, next) => {
   }
 };
 
-exports.getCommentsByArticleId = (req, res, next) => {
-  const id = req.params.article_id;
-  checkArticleExists(id)
-    .then(() => {
-      fetchCommentsByArticleId(id).then((comments) => {
-        res.status(200).send({ comments });
-      });
-    })
-    .catch((err) => {
-      next(err);
-    });
+exports.getCommentsByArticleId = async (req, res, next) => {
+  try {
+    const id = req.params.article_id;
+    await checkArticleExists(id);
+    const comments = await fetchCommentsByArticleId(id);
+    res.status(200).send({ comments });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteCommentById = async (req, res, next) => {
+  try {
+    const id = req.params.comment_id;
+    await removeCommentById(id);
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getApi = (req, res) => {
+  res.send({ endpoints });
 };

@@ -7,10 +7,14 @@ const {
   getArticles,
   postComments,
   getCommentsByArticleId,
+  deleteCommentById,
+  getApi,
 } = require("./controllers/articles-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 
 app.use(express.json());
+
+app.get("/api", getApi);
 
 app.get("/api/topics", getTopics);
 
@@ -26,13 +30,13 @@ app.get("/api/users", getUsers);
 
 app.post("/api/articles/:article_id/comments", postComments);
 
+app.delete("/api/comments/:comment_id", deleteCommentById);
+
 app.all("/*", (req, res) => {
-  // console.log("<<< error in app.all");
   res.status(404).send({ msg: "Endpoint was not found!" });
 });
 
 app.use((err, req, res, next) => {
-  // console.log(err, "<<< error in app.use");
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Invalid request!" });
   } else {

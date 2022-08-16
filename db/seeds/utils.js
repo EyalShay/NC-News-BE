@@ -35,10 +35,9 @@ exports.checkArticleExists = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id=$1`, [id])
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Article not found!" });
-      }
-      return rows;
+      return rows.length === 0
+        ? Promise.reject({ status: 404, msg: "Article not found!" })
+        : rows;
     });
 };
 
@@ -46,9 +45,6 @@ exports.checkTopic = (topic_name) => {
   return db
     .query(`SELECT * FROM topics WHERE slug=$1`, [topic_name])
     .then(({ rows }) => {
-      if (rows.length > 0) {
-        return rows;
-      }
-      return topic_name;
+      return rows.length > 0 ? rows : topic_name;
     });
 };

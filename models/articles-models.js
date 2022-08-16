@@ -36,7 +36,7 @@ exports.updateArticlesById = (newVotes, id) => {
   }
 };
 
-exports.fetchArticles = async (sortBy = "created_at") => {
+exports.fetchArticles = async (sortBy = "created_at", orderBy = "desc") => {
   const exists = await checkTopic(sortBy);
   const validTopic = exists[0].slug;
   const injected = [];
@@ -52,7 +52,7 @@ exports.fetchArticles = async (sortBy = "created_at") => {
     "title",
     "article_id",
   ];
-  if (!validSortBy.includes(sortBy)) {
+  if (!validSortBy.includes(sortBy) || !validSortBy.includes(orderBy)) {
     return Promise.reject({ status: 400, msg: "Invalid request!" });
   }
   let queryStr = `SELECT articles.*, COUNT (comments.article_id)::INTEGER AS comment_count 
@@ -62,13 +62,7 @@ exports.fetchArticles = async (sortBy = "created_at") => {
     injected.push(validTopic);
     sortBy = "topic";
   }
-  if (sortBy === "asc" || sortBy === "desc") {
-    sortBy = `title ${sortBy}`;
-  }
-  queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} `;
-  if (sortBy === "created_at") {
-    queryStr += "desc";
-  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${orderBy}`;
   const { rows } = await db.query(queryStr, injected);
   if (rows.length === 0) {
     return Promise.reject({
@@ -102,5 +96,15 @@ exports.fetchCommentsByArticleId = (id) => {
     .query(`SELECT * FROM comments WHERE article_id=$1`, [id])
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.removeCommentById = (id) => {
+  return db
+    .query("DELETE FROM comments WHERE comment_id=$1;", [id])
+    .then((rows) => {
+      return rows.rowCount > 0
+        ? console.log("Comment deleted")
+        : Promise.reject({ status: 404, msg: "Comment was not found!" });
     });
 };
