@@ -111,8 +111,6 @@
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "Endpoint should delete the specified comment from the database",
-    "queries": [],
-    "exampleResponse": {}
+    "description": "Endpoint should delete the specified comment from the database"
   }
 }

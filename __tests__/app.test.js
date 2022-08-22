@@ -478,9 +478,9 @@ describe("GET /api/articles (queries)", () => {
   test("status:404 when topic is valid but has no articles", () => {
     return request(app)
       .get(`/api/articles?topic=paper`)
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("No articles found with requested topic!");
+        expect(body.articles).toEqual([]);
       });
   });
   test("status:400 for an invalid topic", () => {
@@ -512,12 +512,7 @@ describe("GET /api/articles (queries)", () => {
 describe("DELETE /api/comments/:comment_id", () => {
   test("status:204 No Content Status, endpoint should delete the specified comment from the database", () => {
     const ID = 1;
-    return request(app)
-      .delete(`/api/comments/${ID}`)
-      .expect(204)
-      .then(({ body }) => {
-        expect(body).toEqual({});
-      });
+    return request(app).delete(`/api/comments/${ID}`).expect(204);
   });
   test("status:404 when trying to delete a comment that doesn't exist from a valid endpoint", () => {
     const ID = 999;
