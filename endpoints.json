@@ -4,7 +4,6 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
@@ -26,7 +25,6 @@
   },
   "GET /api/users": {
     "description": "serves an array of all users",
-    "queries": [],
     "exampleResponse": {
       "users": [
         {
@@ -39,7 +37,6 @@
   },
   "GET /api/articles/:article_id": {
     "description": "displays an article by article_id",
-    "queries": [],
     "exampleResponse": {
       "articles": [
         {
@@ -56,7 +53,6 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comments by article_id",
-    "queries": [],
     "exampleResponse": {
       "comments": [
         {
@@ -81,7 +77,7 @@
 
   "PATCH /api/articles/:article_id": {
     "description": "request body accepts an object that determined how many votes to add or deduct from the votes property",
-    "queries": [],
+    "exampleRequest": { "inc_votes": 4 },
     "exampleResponse": {
       "articles": [
         {
@@ -91,14 +87,17 @@
           "author": "butter_bridge",
           "body": "I find this existence challenging",
           "created_at": 1594329060000,
-          "votes": 70
+          "votes": 4
         }
       ]
     }
   },
   "POST /api/articles/:article_id/comments": {
     "description": "Responds with a newly posted comment",
-    "queries": [],
+    "exampleRequest": {
+      "author": "icellusedkars",
+      "body": "loads of interesting things"
+    },
     "exampleResponse": {
       "comment": {
         "comment_id": 19,
