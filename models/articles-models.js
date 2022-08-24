@@ -51,6 +51,7 @@ exports.fetchArticles = async (sortBy = "created_at", orderBy = "desc") => {
     "votes",
     "title",
     "article_id",
+    "comment_count",
   ];
   if (!validSortBy.includes(sortBy) || !validSortBy.includes(orderBy)) {
     return Promise.reject({ status: 400, msg: "Invalid request!" });
