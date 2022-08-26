@@ -36,12 +36,17 @@ exports.updateArticlesById = (newVotes, id) => {
   }
 };
 
-exports.fetchArticles = async (sortBy = "created_at", orderBy = "desc") => {
-  const exists = await checkTopic(sortBy);
-  const validTopic = exists[0].slug;
+exports.fetchArticles = async (
+  sortBy = "created_at",
+  orderBy = "desc",
+  topic
+) => {
+  const exists = await checkTopic(topic);
+  if (topic && !exists) {
+    return Promise.reject({ status: 400, msg: "Invalid request!" });
+  }
   const injected = [];
   const validSortBy = [
-    validTopic,
     "desc",
     "asc",
     "topic",
@@ -58,10 +63,9 @@ exports.fetchArticles = async (sortBy = "created_at", orderBy = "desc") => {
   }
   let queryStr = `SELECT articles.*, COUNT (comments.article_id)::INTEGER AS comment_count 
       FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id`;
-  if (validTopic !== undefined) {
+  if (topic !== undefined) {
     queryStr += ` WHERE articles.topic=$1`;
-    injected.push(validTopic);
-    sortBy = "topic";
+    injected.push(topic);
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${orderBy}`;
   const { rows } = await db.query(queryStr, injected);

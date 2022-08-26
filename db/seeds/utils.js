@@ -45,6 +45,6 @@ exports.checkTopic = (topic_name) => {
   return db
     .query(`SELECT * FROM topics WHERE slug=$1`, [topic_name])
     .then(({ rows }) => {
-      return rows.length > 0 ? rows : topic_name;
+      return rows.length > 0;
     });
 };

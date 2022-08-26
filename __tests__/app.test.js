@@ -453,6 +453,26 @@ describe("GET /api/articles (queries)", () => {
         expect(body.articles).toBeSortedBy("title", { ascending: true });
       });
   });
+  test("status:200 accepts order query that can be set with either asc or desc - ascending order", () => {
+    return request(app)
+      .get(`/api/articles?sort_by=title&order=asc&topic=mitch`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { ascending: true });
+        body.articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              topic: "mitch",
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+            })
+          );
+        });
+      });
+  });
   test("status:200 accepts topic query that will filter the articles by topic value", () => {
     return request(app)
       .get(`/api/articles?topic=mitch`)
