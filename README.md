@@ -1,10 +1,10 @@
 ## Link to the API:
 
-The link to the hosted API can be found [here](https://eyal-ncnews.herokuapp.com/api).
+A link to the hosted API can be found [here](https://eyal-ncnews.herokuapp.com/api).
 
 ## Project Info:
 
-This is a mock News API and was as Back-End project during the Northcoders Bootcamp. It serves as a Back-End API to the Front-End project that I did later on in the Bootcamp. The hosted Front-End project can be found [here](https://eyal-ncnews-project.netlify.app/) and the repo for it can be found [here](https://github.com/EyalShay/fe-news-project).
+This is a mock News API and was done as a Back-End project during the Northcoders Bootcamp. It serves as a Back-End API to the Front-End project that I did later on in the Bootcamp. The hosted Front-End project can be found [here](https://eyal-ncnews-project.netlify.app/) and the repo for it can be found [here](https://github.com/EyalShay/fe-news-project).
 
 ## Setup instruction:
 
@@ -20,7 +20,7 @@ You will need to install all the dependencies e.g:
 npm install
 ```
 
-To seed the database simply run the seeding script using your package manager e.g:
+To seed the database simply run the seeding script e.g:
 
 ```sh
 npm run seed
