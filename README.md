@@ -4,7 +4,9 @@ A link to the hosted API can be found [here](https://eyal-ncnews.herokuapp.com/a
 
 ## Project Info:
 
-This is a mock News API and was done as a Back-End project during the Northcoders Bootcamp. It serves as a Back-End API to the Front-End project that I did later on in the Bootcamp. The hosted Front-End project can be found [here](https://eyal-ncnews-project.netlify.app/) and the repo for it can be found [here](https://github.com/EyalShay/fe-news-project).
+This is a mock News API and was done as a Back-End project during the Northcoders Bootcamp.\
+It serves as a Back-End API to the Front-End project that I did later on in the Bootcamp.\
+The hosted Front-End project can be found [here](https://eyal-ncnews-project.netlify.app/) and the repo for it can be found [here](https://github.com/EyalShay/fe-news-project).
 
 ## Setup instruction:
 
